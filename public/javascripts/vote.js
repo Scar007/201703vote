@@ -31,47 +31,52 @@ let voteFn = {
                     </li>`
     )
   },
-  request({url,type='GET',dataType='json',data={},success}){
+  request({url, type = 'GET', dataType = 'json', data = {}, success}){
     $.ajax({url, type, dataType, data, success});
   },
   loadUsers(load){
     voteFn.request({
-      url:'/vote/index/data',
-      data:{limit,offset},
+      url: '/vote/index/data',
+      data: {limit, offset},
       success(result){
         let total = result.data.total;
         let users = result.data.objects;
         //修改偏移量1 偏移量0 第二页 10
-        offset+=users.length;
+        offset += users.length;
         //TODO 把users数组转成li数组并且添加到ul里
-        let html = users.map(user=>voteFn.formatUser(user)).join('');
+        let html = users.map(user => voteFn.formatUser(user)).join('');
 
-        if(offset>=total){
-          setTimeout(function(){
+        if (offset >= total) {
+          setTimeout(function () {
             $('.coming').append(html);
             load && load.complete();
             load && load.reset();
-          },1000);
-        }else{
-          setTimeout(function(){
+          }, 1000);
+        } else {
+          setTimeout(function () {
             $('.coming').append(html);
             load && load.reset();
-          },1000);
+          }, 1000);
         }
       }
     });
   },
   initIndex(){//初始化首页
     voteFn.loadUsers();
-    loadMore({callback:voteFn.loadUsers});
+    loadMore({callback: voteFn.loadUsers});
   }
 }
 //根据不同的页面加载不同的JS脚本
 let indexReg = /\/vote\/index/;
-$(function(){
+let registerReg = /\/vote\/register/;
+$(function () {
   let url = location.href;
-  if(indexReg.test(url)){//如果是首页的话
+  if (indexReg.test(url)) {//如果是首页的话
     voteFn.initIndex();
+  } else if (registerReg.test(url)) {
+    $('.rebtn').click(function(){
+
+    });
   }
 
 });
