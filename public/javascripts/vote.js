@@ -75,6 +75,28 @@ $(function () {
     voteFn.initIndex();
   } else if (registerReg.test(url)) {
     $('.rebtn').click(function(){
+       let username = $('.username').val();
+       if(!username){
+         alert('用户名不能为空');return;
+       }
+       let password = $('.password').val();
+       if(!/[a-zA-Z0-9]{1,10}/.test(password)){
+         alert('密码不合法');return;
+       }
+       let confirm_password = $('.confirm_password').val();
+       if(password!= confirm_password){
+         alert('确认密码和密码不一致');return;
+       }
+       let mobile = $('.mobile').val();
+       if(!/1\d{10}/.test(mobile)){
+         alert('手机号不合法');return;
+       }
+       let description = $('.description').val();
+       if(!(description && description.length<=20)){
+        alert('自我描述不合法');return;
+       }
+       let gender = $("input[name='gender']:checked").val();
+
 
     });
   }
