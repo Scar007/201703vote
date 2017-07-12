@@ -45,13 +45,19 @@ let voteFn = {
         offset+=users.length;
         //TODO 把users数组转成li数组并且添加到ul里
         let html = users.map(user=>voteFn.formatUser(user)).join('');
-        $('.coming').append(html);
+
         if(offset>=total){
-          load && load.complete();
+          setTimeout(function(){
+            $('.coming').append(html);
+            load && load.complete();
+            load && load.reset();
+          },1000);
+        }else{
+          setTimeout(function(){
+            $('.coming').append(html);
+            load && load.reset();
+          },1000);
         }
-        setTimeout(function(){
-          load && load.reset();
-        },1000);
       }
     });
   }
