@@ -14,7 +14,7 @@ let voteFn = {
                            <div class="vote">
                               <span>${user.vote}票</span>
                            </div>
-                           <div class="btn">
+                           <div class="btn" data-id="${user.id}">
                               投TA一票
                            </div>
                         </div>
@@ -64,6 +64,62 @@ let voteFn = {
   initIndex(){//初始化首页
     voteFn.loadUsers();
     loadMore({callback: voteFn.loadUsers});
+    let user = voteFn.getUser();
+    $('.coming').click(function(event){
+      if(event.target.className == 'btn'){
+        if(user){ //dataset存放着所有的自定义属性 data-
+          let id = event.target.dataset.id;//被投票者ID
+          let voteId = user.id;//投票者ID
+
+
+        }
+
+
+
+      }
+    });
+  },
+  initRegister(){
+    $('.rebtn').click(function(){
+      let username = $('.username').val();
+      if(!username){
+        alert('用户名不能为空');return;
+      }
+      let password = $('.initial_password').val();
+      if(!/[a-zA-Z0-9]{1,10}/.test(password)){
+        alert('密码不合法');return;
+      }
+      let confirm_password = $('.confirm_password').val();
+      if(password!= confirm_password){
+        alert('确认密码和密码不一致');return;
+      }
+      let mobile = $('.mobile').val();
+      if(!/1\d{10}/.test(mobile)){
+        alert('手机号不合法');return;
+      }
+      let description = $('.description').val();
+      if(!(description && description.length<=20)){
+        alert('自我描述不合法');return;
+      }
+      let gender = $("input[name='gender']:checked").val();
+      voteFn.request({
+        url:'/vote/register/data',
+        type:'POST',
+        data:{username,password,mobile,description,gender},
+        success(result){
+          alert(result.msg);//不管成功还是失败，都会弹出系统提示
+          if(result.errno == 0){
+            //在注册之后此用户自动登录,把当前的用户信息存放在local中
+            voteFn.setUser({id:result.id,username})
+            location.href = '/vote/index';
+          }
+        }
+      })
+
+    });
+  },
+  setUser(user){
+    localStorage.setItem('user',JSON.stringify(user));
   }
 }
 //根据不同的页面加载不同的JS脚本
@@ -74,31 +130,7 @@ $(function () {
   if (indexReg.test(url)) {//如果是首页的话
     voteFn.initIndex();
   } else if (registerReg.test(url)) {
-    $('.rebtn').click(function(){
-       let username = $('.username').val();
-       if(!username){
-         alert('用户名不能为空');return;
-       }
-       let password = $('.password').val();
-       if(!/[a-zA-Z0-9]{1,10}/.test(password)){
-         alert('密码不合法');return;
-       }
-       let confirm_password = $('.confirm_password').val();
-       if(password!= confirm_password){
-         alert('确认密码和密码不一致');return;
-       }
-       let mobile = $('.mobile').val();
-       if(!/1\d{10}/.test(mobile)){
-         alert('手机号不合法');return;
-       }
-       let description = $('.description').val();
-       if(!(description && description.length<=20)){
-        alert('自我描述不合法');return;
-       }
-       let gender = $("input[name='gender']:checked").val();
-
-
-    });
+    voteFn.initRegister();
   }
 
 });
