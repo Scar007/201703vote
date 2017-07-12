@@ -33,10 +33,15 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 
 //获得get请求，第一个参数是匹配内容，第二个参数是匹配成功后执行的回调函数
-app.get('/vote/index', routes.index);  
-app.get(/\/vote\/detail/, routes.detail);  
-app.get('/vote/register', routes.register);  
-app.get('/vote/search', routes.search); 
+//首页
+app.get('/vote/index', routes.index);
+//详情页
+app.get(/\/vote\/detail/, routes.detail);
+//注册页=报名页
+app.get('/vote/register', routes.register);
+//搜索结果页
+app.get('/vote/search', routes.search);
+//规则页
 app.get('/vote/rule', routes.rule);
 
 app.get('/vote/index/data', routes.index_data);
