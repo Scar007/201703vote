@@ -60,13 +60,18 @@ let voteFn = {
         }
       }
     });
+  },
+  initIndex(){//初始化首页
+    voteFn.loadUsers();
+    loadMore({callback:voteFn.loadUsers});
   }
 }
+//根据不同的页面加载不同的JS脚本
+let indexReg = /\/vote\/index/;
 $(function(){
-  //1.少传几个变量，不再可能漏写，也不可能出错
-  //2.如果以后不用jquery, 只改一个地方就可以了 jquery axios fetch
-  voteFn.loadUsers();
-  loadMore({
-    callback:voteFn.loadUsers
-  });
+  let url = location.href;
+  if(indexReg.test(url)){//如果是首页的话
+    voteFn.initIndex();
+  }
+
 });

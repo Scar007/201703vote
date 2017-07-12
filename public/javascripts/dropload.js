@@ -50,7 +50,7 @@
         window.onscroll = function() {
             var realHeight = (document.documentElement.clientHeight || document.body.clientHeight) + (document.documentElement.scrollTop || document.body.scrollTop);
             var winHeight = (document.documentElement.scrollHeight || document.body.scrollHeight);
-            if (realHeight >= winHeight) {
+            if (realHeight+5 >= winHeight) {
                 _this.loadFlag = true;
             }else {
                 _this.loadFlag = false;
