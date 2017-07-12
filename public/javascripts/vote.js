@@ -100,6 +100,27 @@ let voteFn = {
     if(user){
       $('.sign_in span').html('已登入');
       $('.no_signed').hide();
+    }else{
+      $('.subbtn').click(function(){
+        let id = $('.usernum').val();
+        let password = $('.user_password').val();
+        if(id && password){
+          voteFn.request({
+            url:'/vote/index/info',
+            type:'POST',
+            data:{id,password},
+            success(result){
+              alert(result.msg);
+              if(result.errno == 0){
+                voteFn.setUser(result.user);
+                location.reload();
+              }
+            }
+          });
+        }else{
+          alert('用户编号和密码不能为空');return;
+        }
+      });
     }
   },
   initRegister(){
