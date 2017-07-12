@@ -100,6 +100,11 @@ let voteFn = {
     if(user){
       $('.sign_in span').html('已登入');
       $('.no_signed').hide();
+      $('.dropout').click(function(){
+        voteFn.clearUser();
+        location.reload();//重新刷新当前页面
+      });
+      $('.register a').html('个人主页').attr('href',`/vote/detail/${user.id}`);
     }else{
       $('.subbtn').click(function(){
         let id = $('.usernum').val();
@@ -113,7 +118,7 @@ let voteFn = {
               alert(result.msg);
               if(result.errno == 0){
                 voteFn.setUser(result.user);
-                location.reload();
+                location.reload();//重新刷新当前页面
               }
             }
           });
@@ -164,6 +169,9 @@ let voteFn = {
   },
   setUser(user){
     localStorage.setItem('user',JSON.stringify(user));
+  },
+  clearUser(){
+    localStorage.removeItem('user');
   },
   getUser(){
     return localStorage.getItem('user')?JSON.parse(localStorage.getItem('user')):null;
