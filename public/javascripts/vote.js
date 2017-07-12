@@ -1,5 +1,5 @@
 let limit = 10;//每页10条数据
-let offset = 80;//起始的索引
+let offset = 0;//起始的索引
 let voteFn = {
   //此方法用于将用户user转成模板字符串
   formatUser(user){
@@ -69,15 +69,38 @@ let voteFn = {
       if(event.target.className == 'btn'){
         if(user){ //dataset存放着所有的自定义属性 data-
           let id = event.target.dataset.id;//被投票者ID
-          let voteId = user.id;//投票者ID
-
-
+          let voterId = user.id;//投票者ID
+          voteFn.request({
+            url:'/vote/index/poll',
+            data:{id,voterId},
+            success(result){
+              alert(result.msg);
+              if(result.errno == 0){
+                let voteSpan = $(event.target).siblings('.vote').children('span');
+                voteSpan.html(parseInt(voteSpan.text())+1+'票');
+              }
+            }
+          });
+        }else{
+           $('.mask').show();
         }
 
 
 
       }
     });
+    $('.mask').click(function(event){
+      if(event.target.className == 'mask'){//如果说事件源是mask的话就关掉登录窗口
+        $('.mask').hide();
+      }
+    });
+    $('.sign_in').click(function(){
+      $('.mask').show();
+    });
+    if(user){
+      $('.sign_in span').html('已登入');
+      $('.no_signed').hide();
+    }
   },
   initRegister(){
     $('.rebtn').click(function(){
@@ -120,6 +143,9 @@ let voteFn = {
   },
   setUser(user){
     localStorage.setItem('user',JSON.stringify(user));
+  },
+  getUser(){
+    return localStorage.getItem('user')?JSON.parse(localStorage.getItem('user')):null;
   }
 }
 //根据不同的页面加载不同的JS脚本
