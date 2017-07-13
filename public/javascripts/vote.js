@@ -1,6 +1,7 @@
 let limit = 10;//每页10条数据
 let offset = 0;//起始的索引
 let url = location.href;
+
 let voteFn = {
   //此方法用于将用户user转成模板字符串
   formatUser(user){
@@ -62,10 +63,7 @@ let voteFn = {
       }
     });
   },
-  initIndex(){//初始化首页
-    voteFn.loadUsers();
-    loadMore({callback: voteFn.loadUsers});
-    let user = voteFn.getUser();
+  bindPoll(){
     $('.coming').click(function (event) {
       if (event.target.className == 'btn') {
         if (user) { //dataset存放着所有的自定义属性 data-
@@ -89,6 +87,11 @@ let voteFn = {
 
       }
     });
+  },
+  initIndex(){//初始化首页
+    voteFn.loadUsers();
+    loadMore({callback: voteFn.loadUsers});
+    voteFn.bindPoll();
     $('.mask').click(function (event) {
       if (event.target.className == 'mask') {//如果说事件源是mask的话就关掉登录窗口
         $('.mask').hide();
@@ -260,8 +263,10 @@ let voteFn = {
         $('.coming').html(html);
       }
     })
+    voteFn.bindPoll();
   }
 }
+let user = voteFn.getUser();
 //根据不同的页面加载不同的JS脚本
 let indexReg = /\/vote\/index/;
 let registerReg = /\/vote\/register/;
