@@ -43,13 +43,17 @@ app.get('/vote/register', routes.register);
 app.get('/vote/search', routes.search);
 //规则页
 app.get('/vote/rule', routes.rule);
-
+//首页的用户列表
 app.get('/vote/index/data', routes.index_data);
+//投票
 app.get(/\/vote\/index\/poll/, routes.index_poll);
+//搜索接口
 app.get(/\/vote\/index\/search/, routes.index_search);
+//个人详情页接口
 app.get(/\/vote\/all\/detail\/data/, routes.detail_data);
-
+//注册接口
 app.post(/\/vote\/register\/data/, routes.register_data);
+//登录
 app.post('/vote/index/info', routes.index_info);
 
 

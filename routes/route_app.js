@@ -66,9 +66,13 @@ exports.rule = (req, res) => {
 };
 
 exports.index_data = (req, res) => {
+    //取得查询字符串对象
     let query = url.parse(req.url, true).query,
+    //取得偏移量
         offset = +query.offset,
+    //每页的条数
         limit = +query.limit,
+    //
         sendObjs = database.data.objects.slice(offset, offset + limit),
         sendData = {
             errno: 0,
@@ -88,15 +92,18 @@ exports.index_data = (req, res) => {
 
 exports.index_poll = (req, res) => {
     let query = url.parse(req.url, true).query,
-        id = +query.id,
+        id = +query.id,//被投票者ID
         ownObj = {},
-        voterId = +query.voterId,
-            sendData = {
+        voterId = +query.voterId,//投票者ID
+        sendData = {
             errno: 0,
             msg: '投票成功'
         },
+        //从用户数组中拿到ID对应的用户对象
         pollUser = dealFn.getItem(id, database.data.objects),
+       //从用户数组中拿到投票者ID
         voter = dealFn.getItem(voterId, database.data.objects);
+    //pollUser是被投票者
     for(let i=0; i<pollUser.vfriend.length; i++) {
         if(pollUser.vfriend[i].id === voterId) {
             sendData.errno = '-1';
@@ -105,15 +112,20 @@ exports.index_poll = (req, res) => {
             return;
         }
     }
+    //如果当前用户投的票数已经大于等于最大投票数了
     if(voter.vote_times >= maxVoteTimes) {
         sendData.errno = '-2';
         sendData.msg = '每个人最多能投5票，您已经使用完了';
         res.send(JSON.stringify(sendData));
         return;
     }
+    //复制了一份投票者信息
     ownObj = dealFn.cloneUser(voter);
+    //向被投票者的朋友们数组中添加当前投票者
     pollUser.vfriend.push(ownObj);
+    //让被投票者的票数加1
     pollUser.vote++;
+    //当有人的票数发生改变后，重新排名
     database.data.objects = dealFn.sortRank(database.data.objects);
     dealFn.writeFileData('database.json', database).then((msg) => {
         console.log(msg);
@@ -125,6 +137,7 @@ exports.index_poll = (req, res) => {
 
 exports.register_data = (req, res) => {
     let total = database.data.total,
+      //从请求体中获取到用户注册信息{username,password,mobile,description,gender}
         registerData = req.body,
         sendData = {};
     if (!registerData.username || !registerData.mobile || !registerData.description || !registerData.gender || !registerData.password ) {
@@ -136,12 +149,15 @@ exports.register_data = (req, res) => {
         return false
     }
     database.data.total++;
+    //给头像字段赋值
     registerData.gender === 'boy' ? registerData.head_icon = '/images/boy.png' : registerData.head_icon = '/images/girl.png';
+    //总条数+1
     registerData.id = ++total;
-    registerData.vote = 0;
-    registerData.rank = 0;
-    registerData.vote_times = 0;
-    registerData.vfriend = [];
+    registerData.vote = 0;//得到票数
+    registerData.rank = 0;//排名
+    registerData.vote_times = 0;//投票的次数
+    registerData.vfriend = [];//给他投票的人
+    //把对象放到数组中去
     database.data.objects.push(registerData);
     dealFn.writeFileData('database.json', database).then((msg) => {
         console.log(msg);

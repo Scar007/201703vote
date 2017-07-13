@@ -99,7 +99,7 @@ let dealFn = {
 	 * @return {Array}          [搜索到的数组]
 	 */
 	serchItems: (content, objs) => {
-		let searchResult = [];
+		let searchResult = [];//搜索的结果
 		let reg = /^\d*$/;
 		if(reg.test(content)) {
 			let searchUser =  dealFn.getItem(+content, objs);
