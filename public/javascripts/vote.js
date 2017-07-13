@@ -1,5 +1,6 @@
 let limit = 10;//每页10条数据
 let offset = 0;//起始的索引
+let url = location.href;
 let voteFn = {
   //此方法用于将用户user转成模板字符串
   formatUser(user){
@@ -175,17 +176,26 @@ let voteFn = {
   },
   getUser(){
     return localStorage.getItem('user')?JSON.parse(localStorage.getItem('user')):null;
+  },
+  //初始化详情页
+  initDetail(){
+    let result = url.match(/\/vote\/detail\/(\d+)/);
+    let id = result[1];//得到第一个分组，是ID号
+
+
   }
 }
 //根据不同的页面加载不同的JS脚本
 let indexReg = /\/vote\/index/;
 let registerReg = /\/vote\/register/;
+let detailReg = /\/vote\/detail/;
 $(function () {
-  let url = location.href;
   if (indexReg.test(url)) {//如果是首页的话
     voteFn.initIndex();
   } else if (registerReg.test(url)) {
     voteFn.initRegister();
+  }else if(detailReg.test(url)){
+    voteFn.initDetail()
   }
 
 });
