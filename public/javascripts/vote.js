@@ -66,101 +66,106 @@ let voteFn = {
     voteFn.loadUsers();
     loadMore({callback: voteFn.loadUsers});
     let user = voteFn.getUser();
-    $('.coming').click(function(event){
-      if(event.target.className == 'btn'){
-        if(user){ //dataset存放着所有的自定义属性 data-
+    $('.coming').click(function (event) {
+      if (event.target.className == 'btn') {
+        if (user) { //dataset存放着所有的自定义属性 data-
           let id = event.target.dataset.id;//被投票者ID
           let voterId = user.id;//投票者ID
           voteFn.request({
-            url:'/vote/index/poll',
-            data:{id,voterId},
+            url: '/vote/index/poll',
+            data: {id, voterId},
             success(result){
               alert(result.msg);
-              if(result.errno == 0){
+              if (result.errno == 0) {
                 let voteSpan = $(event.target).siblings('.vote').children('span');
-                voteSpan.html(parseInt(voteSpan.text())+1+'票');
+                voteSpan.html(parseInt(voteSpan.text()) + 1 + '票');
               }
             }
           });
-        }else{
-           $('.mask').show();
+        } else {
+          $('.mask').show();
         }
 
 
-
       }
     });
-    $('.mask').click(function(event){
-      if(event.target.className == 'mask'){//如果说事件源是mask的话就关掉登录窗口
+    $('.mask').click(function (event) {
+      if (event.target.className == 'mask') {//如果说事件源是mask的话就关掉登录窗口
         $('.mask').hide();
       }
     });
-    $('.sign_in').click(function(){
+    $('.sign_in').click(function () {
       $('.mask').show();
     });
-    if(user){
+    if (user) {
       $('.sign_in span').html('已登入');
       $('.no_signed').hide();
-      $('.dropout').click(function(){
+      $('.dropout').click(function () {
         voteFn.clearUser();
         location.reload();//重新刷新当前页面
       });
-      $('.register a').html('个人主页').attr('href',`/vote/detail/${user.id}`);
-    }else{
-      $('.subbtn').click(function(){
+      $('.register a').html('个人主页').attr('href', `/vote/detail/${user.id}`);
+    } else {
+      $('.subbtn').click(function () {
         let id = $('.usernum').val();
         let password = $('.user_password').val();
-        if(id && password){
+        if (id && password) {
           voteFn.request({
-            url:'/vote/index/info',
-            type:'POST',
-            data:{id,password},
+            url: '/vote/index/info',
+            type: 'POST',
+            data: {id, password},
             success(result){
               alert(result.msg);
-              if(result.errno == 0){
+              if (result.errno == 0) {
                 voteFn.setUser(result.user);
                 location.reload();//重新刷新当前页面
               }
             }
           });
-        }else{
-          alert('用户编号和密码不能为空');return;
+        } else {
+          alert('用户编号和密码不能为空');
+          return;
         }
       });
     }
   },
   initRegister(){
-    $('.rebtn').click(function(){
+    $('.rebtn').click(function () {
       let username = $('.username').val();
-      if(!username){
-        alert('用户名不能为空');return;
+      if (!username) {
+        alert('用户名不能为空');
+        return;
       }
       let password = $('.initial_password').val();
-      if(!/[a-zA-Z0-9]{1,10}/.test(password)){
-        alert('密码不合法');return;
+      if (!/[a-zA-Z0-9]{1,10}/.test(password)) {
+        alert('密码不合法');
+        return;
       }
       let confirm_password = $('.confirm_password').val();
-      if(password!= confirm_password){
-        alert('确认密码和密码不一致');return;
+      if (password != confirm_password) {
+        alert('确认密码和密码不一致');
+        return;
       }
       let mobile = $('.mobile').val();
-      if(!/1\d{10}/.test(mobile)){
-        alert('手机号不合法');return;
+      if (!/1\d{10}/.test(mobile)) {
+        alert('手机号不合法');
+        return;
       }
       let description = $('.description').val();
-      if(!(description && description.length<=20)){
-        alert('自我描述不合法');return;
+      if (!(description && description.length <= 20)) {
+        alert('自我描述不合法');
+        return;
       }
       let gender = $("input[name='gender']:checked").val();
       voteFn.request({
-        url:'/vote/register/data',
-        type:'POST',
-        data:{username,password,mobile,description,gender},
+        url: '/vote/register/data',
+        type: 'POST',
+        data: {username, password, mobile, description, gender},
         success(result){
           alert(result.msg);//不管成功还是失败，都会弹出系统提示
-          if(result.errno == 0){
+          if (result.errno == 0) {
             //在注册之后此用户自动登录,把当前的用户信息存放在local中
-            voteFn.setUser({id:result.id,username})
+            voteFn.setUser({id: result.id, username})
             location.href = '/vote/index';
           }
         }
@@ -169,19 +174,52 @@ let voteFn = {
     });
   },
   setUser(user){
-    localStorage.setItem('user',JSON.stringify(user));
+    localStorage.setItem('user', JSON.stringify(user));
   },
   clearUser(){
     localStorage.removeItem('user');
   },
   getUser(){
-    return localStorage.getItem('user')?JSON.parse(localStorage.getItem('user')):null;
+    return localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')) : null;
+  },
+  formatHead(user){
+    return (
+      `
+      <div class="pl">
+					<div class="head">
+						<img src="${user.head_icon}" alt="">
+					</div>
+					<div class="p_descr">
+						<p>${user.username}</p>
+						<p>编号#${user.id}</p>
+					</div>
+				</div>
+				<div class="pr">
+					<div class="p_descr pr_descr">
+						<p>${user.rank}名</p>
+						<p>${user.vote}票</p>
+					</div>
+				</div>
+				<div class="motto">
+					${user.description}
+				</div>
+      `
+    )
   },
   //初始化详情页
   initDetail(){
     let result = url.match(/\/vote\/detail\/(\d+)/);
     let id = result[1];//得到第一个分组，是ID号
+    voteFn.request({
+      url: '/vote/all/detail/data',
+      data: {id},
+      success(result){
+        let user = result.data;
+        let headHtml = voteFn.formatUser(user);
+        $('.personal').html(headHtml);
 
+      }
+    })
 
   }
 }
@@ -194,7 +232,7 @@ $(function () {
     voteFn.initIndex();
   } else if (registerReg.test(url)) {
     voteFn.initRegister();
-  }else if(detailReg.test(url)){
+  } else if (detailReg.test(url)) {
     voteFn.initDetail()
   }
 
