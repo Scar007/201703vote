@@ -206,6 +206,26 @@ let voteFn = {
       `
     )
   },
+  formatFriend(friends){
+    return friends.map(friend=>(
+       `
+       <li>
+				    <div class="head">
+				        <a href="#"><img src="${friend.head_icon}" alt=""></a>
+				    </div>
+				    <div class="up">
+				    	<div class="vote">
+				    		<span>投了一票</span>
+				    	</div>
+				    </div>
+				    <div class="descr">
+				        <h3>${friend.username}</h3>
+				        <p>编号#${friend.id}</p>
+				    </div>
+				</li>	
+       `
+    )).join('');
+  },
   //初始化详情页
   initDetail(){
     let result = url.match(/\/vote\/detail\/(\d+)/);
@@ -215,9 +235,10 @@ let voteFn = {
       data: {id},
       success(result){
         let user = result.data;
-        let headHtml = voteFn.formatUser(user);
+        let headHtml = voteFn.formatHead(user);
         $('.personal').html(headHtml);
-
+        let friendHtml = voteFn.formatFriend(user.vfriend);
+        $('.vflist').html(friendHtml);
       }
     })
 
@@ -235,5 +256,4 @@ $(function () {
   } else if (detailReg.test(url)) {
     voteFn.initDetail()
   }
-
 });
