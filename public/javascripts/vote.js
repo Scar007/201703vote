@@ -132,10 +132,10 @@ let voteFn = {
       });
     }
     //绑定搜索按钮
-    $('.search span').click(function(){
-       let keyword = $('.search input').val();
-       localStorage.setItem('keyword',keyword);
-       location.href = '/vote/search';
+    $('.search span').click(function () {
+      let keyword = $('.search input').val();
+      localStorage.setItem('keyword', keyword);
+      location.href = '/vote/search';
     });
   },
   initRegister(){
@@ -255,11 +255,11 @@ let voteFn = {
   initSearch(){
     let content = localStorage.getItem('keyword');
     voteFn.request({
-      url:'/vote/index/search',
-      data:{content},
+      url: '/vote/index/search',
+      data: {content},
       success(result){
         let users = result.data;
-        let html = users.map(user=>voteFn.formatUser(user)).join('');
+        let html = users.map(user => voteFn.formatUser(user)).join('');
         $('.coming').html(html);
       }
     })
@@ -279,7 +279,7 @@ $(function () {
     voteFn.initRegister();
   } else if (detailReg.test(url)) {
     voteFn.initDetail()
-  }else if(searchReg.test(url)){
+  } else if (searchReg.test(url)) {
     voteFn.initSearch();
   }
 });
