@@ -7,8 +7,8 @@ let voteFn = {
     return (
       `<li>        
                         <div class="head">
-                           <a href="detail.html">
-                              <img src="${user.head_icon}" alt="">
+                           <a href="/vote/detail/${user.id}">
+                              <img src="${user.head_icon}">
                            </a>
                         </div>
                         <div class="up">
@@ -128,6 +128,12 @@ let voteFn = {
         }
       });
     }
+    //绑定搜索按钮
+    $('.search span').click(function(){
+       let keyword = $('.search input').val();
+       localStorage.setItem('keyword',keyword);
+       location.href = '/vote/search';
+    });
   },
   initRegister(){
     $('.rebtn').click(function () {
@@ -207,8 +213,8 @@ let voteFn = {
     )
   },
   formatFriend(friends){
-    return friends.map(friend=>(
-       `
+    return friends.map(friend => (
+      `
        <li>
 				    <div class="head">
 				        <a href="#"><img src="${friend.head_icon}" alt=""></a>
@@ -241,13 +247,26 @@ let voteFn = {
         $('.vflist').html(friendHtml);
       }
     })
-
+  },
+  //1.获取关键字 2 进行搜索 3 把结果绑定到页面上
+  initSearch(){
+    let content = localStorage.getItem('keyword');
+    voteFn.request({
+      url:'/vote/index/search',
+      data:{content},
+      success(result){
+        let users = result.data;
+        let html = users.map(user=>voteFn.formatUser(user)).join('');
+        $('.coming').html(html);
+      }
+    })
   }
 }
 //根据不同的页面加载不同的JS脚本
 let indexReg = /\/vote\/index/;
 let registerReg = /\/vote\/register/;
 let detailReg = /\/vote\/detail/;
+let searchReg = /\/vote\/search/;
 $(function () {
   if (indexReg.test(url)) {//如果是首页的话
     voteFn.initIndex();
@@ -255,5 +274,7 @@ $(function () {
     voteFn.initRegister();
   } else if (detailReg.test(url)) {
     voteFn.initDetail()
+  }else if(searchReg.test(url)){
+    voteFn.initSearch();
   }
 });
